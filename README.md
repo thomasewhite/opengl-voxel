@@ -9,9 +9,9 @@ I wanted to challenge myself to build a voxel-based world from scratch to:
 - Face and solve **real-world performance problems** in game development.
 
 ## Current Features
-Basic chunk-based rendering  
-Infinite terrain generation (in theory)  
-Simple camera movement
+- Basic chunk-based rendering  
+- Infinite terrain generation (in theory)  
+- Simple camera movement
 
 ## Challenges & Problems Encountered
 **Rendering Optimization:**   
@@ -20,10 +20,10 @@ Currently, the check to only draw visible faces doesnt work between chunks, so t
 My chunk generation has an error of only drawing half the chunks in a random fasion. I think this is to do with the generation of the VBO and VAO for each chunk, but I will fix this next.
 
 ## Next Steps
-🔹 Implement **greedy meshing** to reduce overdraw  
-🔹 Fix **chunk generation**. 
-🔹 Add **basic physics** and **gravity** for player movement
-🔹 Experiment with **ray tracing** so I can draw smaller and more voxels with a high resolution without a large performance loss
+- Implement **greedy meshing** to reduce overdraw  
+- Fix **chunk generation**  
+- Add **basic physics** and **gravity** for player movement  
+- Experiment with **ray tracing** so I can draw smaller and more voxels with a high resolution without a large performance loss  
 
 ## Installation and Running
 1. Clone the repository:
