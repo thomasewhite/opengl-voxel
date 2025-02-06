@@ -34,17 +34,21 @@ I wanted to challenge myself to build a voxel-based world from scratch to:
 
 ## Installation and Running
 1. Clone the repository:
+
    ```sh
    git clone https://github.com/thomasewhite/opengl-voxel.git
 2. Install dependencies e.g. for Arch Linux this is:
+
     ```sh
     sudo pacman -S glfw glm
 3. Compile it:
+
     ```sh
     mkdir build && cd build
     cmake ..
     make
 4. Run the executable:
+
     ```sh
     ./Voxel
 
