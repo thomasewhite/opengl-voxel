@@ -22,14 +22,16 @@ public:
     Chunk();
     Chunk(int x, int z, int size);
     void initializeNeighbors(std::map<std::pair<int, int>, Chunk> &chunkMap);
+    void uploadToGPU();
     void render();
     bool isBlockAt(int x, int y, int z) const;
     ~Chunk();
 
     int chunkX, chunkZ;
-    std::vector<Chunk*> neighbors;
-    unsigned int size = 10;
-    unsigned int height = 128;
+    std::vector<Chunk *> neighbors;
+    unsigned int size = 32;
+    unsigned int height = 64;
+    bool needsUpload = false;
 
 private:
     void initialize();

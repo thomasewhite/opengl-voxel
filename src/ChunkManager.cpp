@@ -29,16 +29,21 @@ void ChunkManager::updateChunks(const Camera &camera)
             if (chunkMap.find(chunkPos) == chunkMap.end())
             {
                 pool.enqueue([this, chunkX, chunkZ]()
-                             {
-                                 generateChunk(chunkX, chunkZ);
-                             });
+                             { generateChunk(chunkX, chunkZ); });
             }
         }
     }
-    
+
+    for (auto &[pos, chunk] : chunkMap)
+    {
+        if (chunk.needsUpload)
+            chunk.uploadToGPU();
+
+        chunk.render();
+    }
+
     unloadDistantChunks(playerChunkX, playerChunkZ);
 }
-
 
 void ChunkManager::generateChunk(int x, int z)
 {

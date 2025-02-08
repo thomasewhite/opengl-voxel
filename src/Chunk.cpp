@@ -182,7 +182,7 @@ bool Chunk::isBlockAt(int x, int y, int z) const
 
 void Chunk::addFaceToBuffer(std::vector<float> &vertices, const float *faces, const glm::vec3 blockPosition)
 {
-    float heightThreshold = 64.0f;
+    float heightThreshold = height / 3;
 
     glm::vec3 randomColor;
     if (blockPosition.y < heightThreshold)
@@ -297,33 +297,49 @@ void Chunk::initialize()
             }
         }
     }
+
+    needsUpload = true;
 }
+
+void Chunk::uploadToGPU()
+{
+    if (!needsUpload) return;
+
+    // Generate VAO/VBO
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+
+    glBindVertexArray(VAO);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+
+    // Upload vertex data
+    if (!batchVertices.empty())
+    {
+        glBufferData(GL_ARRAY_BUFFER, sizeof(float) * batchVertices.size(), batchVertices.data(), GL_STATIC_DRAW);
+        glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)0);
+        glEnableVertexAttribArray(0);
+        glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(3 * sizeof(float)));
+        glEnableVertexAttribArray(1);
+        glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(6 * sizeof(float)));
+        glEnableVertexAttribArray(2);
+    }
+
+    glBindVertexArray(0);
+
+    needsUpload = false; // Mark as uploaded
+}
+
 
 void Chunk::render()
 {
-    if (VBO == 0) // If VBO hasn't been initialized yet
+    if (VAO == 0 || VBO == 0)
     {
-        // Ensure this is on the main thread
-        glGenVertexArrays(1, &VAO);
-        glGenBuffers(1, &VBO);
-
-        glBindVertexArray(VAO);
-        glBindBuffer(GL_ARRAY_BUFFER, VBO);
-
-        // Ensure vertex data is available
-        if (!batchVertices.empty()) {
-            glBufferData(GL_ARRAY_BUFFER, sizeof(float) * batchVertices.size(), batchVertices.data(), GL_STATIC_DRAW);
-            glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)0);
-            glEnableVertexAttribArray(0);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(3 * sizeof(float)));
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 9 * sizeof(float), (void *)(6 * sizeof(float)));
-            glEnableVertexAttribArray(2);
-        }
-
-        glBindVertexArray(0);
+        //std::cerr << "ERROR: VAO or VBO is 0! Skipping rendering." << std::endl;
+        return;
     }
-    // Only render if VBO is initialized
+
+    if (batchVertices.empty())
+        return;
     if (VBO != 0)
     {
         glBindVertexArray(VAO);
@@ -331,7 +347,6 @@ void Chunk::render()
         glBindVertexArray(0);
     }
 }
-
 
 Chunk::~Chunk()
 {

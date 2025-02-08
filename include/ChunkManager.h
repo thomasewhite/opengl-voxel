@@ -31,8 +31,8 @@ public:
 
 private:
     std::unordered_map<std::pair<int, int>, Chunk, pair_hash> chunkMap;
-    const int chunkSize = 16;
-    const int renderDistance = 12;
+    const int chunkSize = 32;
+    const int renderDistance = 4;
     int playerChunkX, playerChunkZ;
 
     void generateChunk(int x, int z);

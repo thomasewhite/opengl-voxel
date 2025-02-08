@@ -9,6 +9,7 @@
 #include <cmath>
 #include <vector>
 #include <map>
+#include <chrono>
 
 #include "../include/Camera.h"
 #include "../include/Shader.h"
@@ -20,6 +21,62 @@ Camera camera(glm::vec3(0.0f, 0.0f, 3.0f));
 
 // Window manager with shared camera
 WindowManager windowManager(camera);
+
+void checkAllOpenGLErrors()
+{
+    GLenum err;
+    while ((err = glGetError()) != GL_NO_ERROR)
+    {
+        std::cerr << "OpenGL Error: " << err << " ";
+        switch (err)
+        {
+        case GL_INVALID_ENUM:
+            std::cerr << "(GL_INVALID_ENUM)";
+            break;
+        case GL_INVALID_VALUE:
+            std::cerr << "(GL_INVALID_VALUE)";
+            break;
+        case GL_INVALID_OPERATION:
+            std::cerr << "(GL_INVALID_OPERATION)";
+            break;
+        case GL_STACK_OVERFLOW:
+            std::cerr << "(GL_STACK_OVERFLOW)";
+            break;
+        case GL_STACK_UNDERFLOW:
+            std::cerr << "(GL_STACK_UNDERFLOW)";
+            break;
+        case GL_OUT_OF_MEMORY:
+            std::cerr << "(GL_OUT_OF_MEMORY)";
+            break;
+        case GL_INVALID_FRAMEBUFFER_OPERATION:
+            std::cerr << "(GL_INVALID_FRAMEBUFFER_OPERATION)";
+            break;
+        default:
+            std::cerr << "(Unknown Error)";
+        }
+        std::cerr << std::endl;
+    }
+}
+
+void displayFPS()
+{
+    static int frameCount = 0;
+    static auto lastTime = std::chrono::high_resolution_clock::now();
+
+    frameCount++;
+
+    auto currentTime = std::chrono::high_resolution_clock::now();
+    double elapsedTime = std::chrono::duration<double, std::milli>(currentTime - lastTime).count();
+
+    if (elapsedTime >= 1000.0) // 1 second has passed
+    {
+        double fps = (frameCount / elapsedTime) * 1000.0;
+        std::cout << "FPS: " << fps << std::endl;
+
+        frameCount = 0;
+        lastTime = currentTime;
+    }
+}
 
 int main()
 {
@@ -65,6 +122,9 @@ int main()
         shader.setMat4("model", model);
 
         chunkManager.renderChunks();
+
+        checkAllOpenGLErrors();
+        displayFPS();
 
         glfwSwapBuffers(windowManager.window);
     }
